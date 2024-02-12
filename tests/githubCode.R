@@ -2,6 +2,7 @@
 # # changing directory
 # cd <path>
 #
+# just a simple commit.
 # # cloning a repository on your computer
 # git clone <your_repo>
 #
@@ -9,6 +10,8 @@
 # # create a new brach 'create', switches to a new branch '-b'
 # # 'create_user' is the name of the new branch
 # git checkout -b create_user
+# silly comment
+#
 #
 # # to check the branches you have
 # git branch
