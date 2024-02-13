@@ -63,7 +63,9 @@
 # ## Create a module infrastructure in R/
 # # golem::add_module(name = "input_file_sta", with_test = TRUE) # Name of the module
 # golem::add_module(name = "getData", with_test = TRUE) # extracting raw data
-#
+
+golem::add_module(name = "example_module")
+
 # golem::add_module(name = "qaRawApp", with_test = TRUE) # QA on raw data
 # golem::add_module(name = "filterPhenoApp", with_test = TRUE ) # QA on raw data
 # golem::add_module(name = "expDesignEditApp", with_test = TRUE ) # QA on raw data

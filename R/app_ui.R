@@ -37,6 +37,8 @@ app_ui <- function(request) {
 
       tabPanel("Data Retrieval ", mod_getData_ui("getData_1"), icon = icon("upload") ),
 
+      tabPanel("Example_module", mod_example_module_ui("example_module_1")),
+
       navbarMenu("QA-QC", icon = icon("medal"),
                  tabPanel(strong("QUALITY CONTROL"),  mod_sectionInfoQAApp_ui("sectionInfoQAApp_1"), icon = icon("medal")),
                  tabPanel("QC1. Outlier Tagging", mod_qaRawApp_ui("qaRawApp_1"), icon = icon("soap") ),
@@ -59,6 +61,7 @@ app_ui <- function(request) {
                  tabPanel("SH1a. Realized Genetic Gain", mod_rggApp_ui("rggApp_1"), icon = icon("chart-line") ), # user needs to do up to a multi-year genetic evaluation to provide the MET as input
                  tabPanel("SH1b. Predicted Genetic Gain", mod_pggApp_ui("pggApp_1"), icon = icon("barcode")),# user needs to perform a multi-year genetic evaluation to provide the MET as input
                  tabPanel(div("SH2. Selection signatures",style = "color:red"))#  , icon = icon("filter")) # may include P3D, traditional single linear regression, Eigen, etc.
+
       ),
 
       navbarMenu("Mutation", icon = icon("dna"),

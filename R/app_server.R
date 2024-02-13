@@ -52,6 +52,8 @@ app_server <- function(input, output, session) {
   mod_sectionInfoGEApp_server("sectionInfoGEApp_1") # infor for genetic evaluation
   mod_sectionInfoSHApp_server("sectionInfoSHApp_1")
 
+  mod_example_module_server("Example_module", data)
+
 }
 
 create_getData_object <- function() {
