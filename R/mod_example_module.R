@@ -42,8 +42,8 @@ mod_example_module_server <- function(id, data){
       df  <- obj$data$pheno
 
       x   <- df[, input$trait] + 1
-      avg <- mean(x, na.rm = TRUE)
-      se  <- sd(x, na.rm = TRUE) / sqrt(length(x))
+      avg <- round(mean(x, na.rm = TRUE), 2)
+      se  <- round(sd(x, na.rm = TRUE) / sqrt(length(x)), 2)
       msg <- paste('Mean value for', input$trait, 'is', avg, 'se =', se)
 
       shinyWidgets::show_alert(title = 'Results', type = 'info', text = msg)

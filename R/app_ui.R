@@ -37,7 +37,7 @@ app_ui <- function(request) {
 
       tabPanel("Data Retrieval ", mod_getData_ui("getData_1"), icon = icon("upload") ),
 
-      tabPanel("Example_module", mod_example_module_ui("example_module_1")),
+      tabPanel("Demo", mod_example_module_ui("example_module_1")),
 
       navbarMenu("QA-QC", icon = icon("medal"),
                  tabPanel(strong("QUALITY CONTROL"),  mod_sectionInfoQAApp_ui("sectionInfoQAApp_1"), icon = icon("medal")),
