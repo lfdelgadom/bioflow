@@ -3,7 +3,7 @@ geno_example  <- 'www/example/geno.hmp.txt'
 ped_example   <- 'www/example/pedigree.csv'
 qtl_example <- 'www/example/qtl.csv'
 
-#' getData UI Function
+#' getData UI Function (test forking)
 #'
 #' @description A shiny Module.
 #'
@@ -94,7 +94,7 @@ mod_getData_ui <- function(id){
                                                textInput(
                                                  inputId = ns('pheno_db_url'),
                                                  label = 'Server URL:',
-                                                 placeholder = 'https://cbbrapi-qa.ebsproject.org'
+                                                 placeholder = 'https://cb-qa.ebsproject.org'
                                                ),
                                                actionButton(
                                                  inputId = ns('pheno_db_save'),
@@ -524,7 +524,7 @@ mod_getData_server <- function(id, map = NULL, data = NULL, res_auth=NULL){
 
         # TODO: check if it has a BrAPI endpoints
         # http://msdn.microsoft.com/en-us/library/ff650303.aspx
-        if (!grepl("^(ht|f)tp(s?)\\:\\/\\/[0-9a-zA-Z]([-.\\w]*[0-9a-zA-Z])*(:(0-9)*)*(\\/?)([a-zA-Z0-9\\-\\.\\?\\,\\'\\/\\\\\\+&amp;%\\$#_]*)?$", input$pheno_db_url)) {
+        if (!grepl("^(ht|f)tp(s?)\\:\\/\\/[0-9a-zA-Z]([-.\\w]*[0-9a-zA-Z])*(:(0-9)*)*(\\/?)([a-zA-Z0-9\\-\\.\\?\\,\\'\\/\\\\\\+&%\\$#_=]*)?$", input$pheno_db_url)) {
           shinyWidgets::show_alert(title = 'Invalid URL!', type = 'error')
           return(NULL)
         }
@@ -565,16 +565,39 @@ mod_getData_server <- function(id, map = NULL, data = NULL, res_auth=NULL){
         tryCatch(
           expr = {
             if (input$pheno_db_type == 'ebs') {
-              if (input$pheno_db_url == 'https://cbbrapi-qa.ebsproject.org') {
+              ebs_instance <- sub('https?://([^\\.]+)\\.([^/]+).*', '\\1', input$pheno_db_url)
+              ebs_domain   <- sub('https?://([^\\.]+)\\.([^/]+).*', '\\2', input$pheno_db_url)
+
+              # EBS QA instance (https://cb-qa.ebsproject.org)
+              if (ebs_domain == 'ebsproject.org' & ebs_instance == 'cb-qa') {
+                ebs_brapi <- sub('(.+)//cb-qa\\.(.+)', '\\1//cbbrapi-qa.\\2', input$pheno_db_url)
+                QBMS::set_qbms_config(url = ebs_brapi, engine = 'ebs', brapi_ver = 'v2')
                 QBMS::login_oauth2(authorize_url = 'https://auth-dev.ebsproject.org/oauth2/authorize',
                                    access_url    = 'https://auth-dev.ebsproject.org/oauth2/token',
                                    client_id     = '5crahiqorgj0lppt3n9dkulkst',
                                    client_secret = '1sf4tipbp4arj3d5cncjmrvk9c2cu30gor5618hnh8rgkp6v5fs')
-              } else {
+
+              # IRRI production instance (https://prod-cb.ebs.irri.org/)
+              } else if (ebs_domain == 'ebs.irri.org') {
+                ebs_brapi <- sub('(.+)//prod-cb\\.(.+)', '\\1//prod-cbbrapi.\\2', input$pheno_db_url)
+                QBMS::set_qbms_config(url = ebs_brapi, engine = 'ebs', brapi_ver = 'v2')
+                QBMS::login_oauth2(authorize_url = 'https://auth.ebsproject.org/oauth2/authorize',
+                                   access_url    = 'https://auth.ebsproject.org/oauth2/token',
+                                   client_id     = '7s4mb2tu4884679rmbucsuopk1',
+                                   client_secret = 'nf4m8qobpj8eplpg0a9bbo63g69vh0r3p8rbovtfb0udd28rnk9')
+
+              # CIMMYT instances (https://cb-maize.ebs.cimmyt.org, https://cb-staging.ebs.cimmyt.org/)
+              # or evaluation instances (https://cb-mee.ebsproject.org, https://cb-ree.ebsproject.org, and https://cb-wee.ebsproject.org)
+              } else if (ebs_domain == 'ebs.cimmyt.org' || ebs_instance %in% c('cb-mee', 'cb-ree', 'cb-wee')) {
+                ebs_brapi <- sub('(.+)//cb-(.+)', '\\1//cbbrapi-\\2', input$pheno_db_url)
+                QBMS::set_qbms_config(url = ebs_brapi, engine = 'ebs', brapi_ver = 'v2')
                 QBMS::login_oauth2(authorize_url = 'https://auth.ebsproject.org/oauth2/authorize',
                                    access_url    = 'https://auth.ebsproject.org/oauth2/token',
                                    client_id     = '346lau0avcptntd1ksbmgdi5c',
                                    client_secret = 'q5vnvakfj800ibh5tvqut73vj8klv1tpt6ugtmuneh6d2jb28i3')
+              } else {
+                shinyWidgets::show_alert(title = 'Oops!', type = 'warning', "We can't recognize this EBS instance :-(")
+                return()
               }
             } else if (input$pheno_db_type == 'bms') {
               QBMS::login_bms(input$pheno_db_user, input$pheno_db_password)
